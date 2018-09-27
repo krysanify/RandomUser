@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserInfoFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/quarter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".2" />
+
+    <TextView
+        android:id="@+id/text_seed"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_uid"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/quarter" />
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_name"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/text_seed" />
+
+    <TextView
+        android:id="@+id/text_gender"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_gender"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/text_name" />
+
+    <TextView
+        android:id="@+id/text_age"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_age"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/text_gender" />
+
+    <TextView
+        android:id="@+id/text_dob"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_dob"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/text_age" />
+
+    <TextView
+        android:id="@+id/text_email"
+        android:layout_width="@dimen/width_info"
+        android:layout_height="wrap_content"
+        android:text="@string/text_email"
+        app:layout_constraintStart_toEndOf="@id/third"
+        app:layout_constraintTop_toBottomOf="@id/text_dob" />
+
+    <TextView
+        android:id="@+id/edit_seed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_seed"
+        app:layout_constraintTop_toTopOf="@id/text_seed"
+        tools:text="@string/edit_seed" />
+
+    <TextView
+        android:id="@+id/edit_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_name"
+        app:layout_constraintTop_toTopOf="@id/text_name"
+        tools:text="Avery Walters" />
+
+    <TextView
+        android:id="@+id/edit_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_gender"
+        app:layout_constraintTop_toTopOf="@id/text_gender"
+        tools:text="@string/female" />
+
+    <TextView
+        android:id="@+id/edit_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_age"
+        app:layout_constraintTop_toTopOf="@id/text_age"
+        tools:text="23" />
+
+    <TextView
+        android:id="@+id/edit_dob"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_dob"
+        app:layout_constraintTop_toTopOf="@id/text_dob"
+        tools:text="11 Aug 1995" />
+
+    <TextView
+        android:id="@+id/edit_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:layout_constraintStart_toEndOf="@id/text_email"
+        app:layout_constraintTop_toTopOf="@id/text_email"
+        tools:text="avery.walters@example.com" />
+
+    <Button
+        android:id="@+id/btn_store"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="@string/btn_store"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

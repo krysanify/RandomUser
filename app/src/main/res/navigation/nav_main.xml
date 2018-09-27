@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@+id/query_fragment">
+
+    <fragment
+        android:id="@+id/query_fragment"
+        android:name="com.krysanify.app.QueryFragment"
+        android:label="@string/nav_query"
+        tools:layout="@layout/fragment_query" />
+
+</navigation>
