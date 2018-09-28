@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.List;
 
 import androidx.test.InstrumentationRegistry;
@@ -38,12 +37,7 @@ public class UserGenTest {
      */
     @Test
     public void usergen_bySeed() {
-        User decaffed = null;
-        try {
-            decaffed = userGen.getBySeed("decaffed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        User decaffed = userGen.getBySeed("decaffed");
         assertNotNull(decaffed);
         assertEquals("decaffed", decaffed.seed);
     }
@@ -54,12 +48,7 @@ public class UserGenTest {
      */
     @Test
     public void usergen_isFemale() {
-        User female = null;
-        try {
-            female = userGen.getByGender("female");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        User female = userGen.getByGender("female");
         assertNotNull(female);
         assertEquals("female", female.gender);
     }
@@ -70,12 +59,7 @@ public class UserGenTest {
      */
     @Test
     public void usergen_notUnknown() {
-        User unknown = null;
-        try {
-            unknown = userGen.getByGender("unknown");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        User unknown = userGen.getByGender("unknown");
         assertNotNull(unknown);
         assertNotEquals("unknown", unknown.gender);
     }
@@ -86,12 +70,7 @@ public class UserGenTest {
      */
     @Test
     public void usergen_getFive() {
-        List<User> users = null;
-        try {
-            users = userGen.getList(5);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<User> users = userGen.getList(5);
         assertEquals(5, users.size());
     }
 }

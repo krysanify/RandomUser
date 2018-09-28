@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 
+@SuppressWarnings("unused")
 class ServiceBody {
     private Info info;
     private List<Result> results;
@@ -16,7 +17,7 @@ class ServiceBody {
     }
 
     @NonNull
-    public List<Result> getResults() {
+    List<Result> getResults() {
         return results;
     }
 
@@ -39,10 +40,9 @@ class ServiceBody {
         private String email;
 
         @NonNull
-        public User toUser(@NonNull String seed) {
+        User toUser(@NonNull String seed) {
             long uid = Arrays.hashCode(new Object[]{seed, name, gender, dob, email});
-            String encrypted = CryptoUtil.encrypt(email); // REQ06
-            return new User(uid, seed, name.asWhole(), gender, dob.date, encrypted, dob.age);
+            return new User(uid, seed, name.asWhole(), gender, dob.date, email, dob.age);
         }
     }
 
@@ -58,7 +58,7 @@ class ServiceBody {
         }
 
         @NonNull
-        public String asWhole() {
+        String asWhole() {
             return String.format(Locale.ENGLISH, "%s %s", first, last);
         }
     }

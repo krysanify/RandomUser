@@ -23,7 +23,7 @@ public class UserTest {
         assertEquals("mr rolf hegdal", user.name);
         assertEquals("male", user.gender);
         assertEquals("1975-11-12T06:34:44Z", user.dob);
-        assertEquals("rolf.hegdal@example.com", user.email);
+        assertEquals("rolf.hegdal@example.com", user.getEmail());
         assertEquals(42, user.getAge());
     }
 

@@ -1,18 +1,22 @@
 package com.krysanify.lib;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
-public class User {
+public class User implements Parcelable {
     @PrimaryKey
     public final long uid;
     public final String seed;
     public final String name;
     public final String gender;
     public final String dob;
-    public final String email;
+    private String email;
     private int age;
 
     /**
@@ -43,7 +47,56 @@ public class User {
         return age;
     }
 
-    public String email() {
-        return CryptoUtil.decrypt(email);
+    public String getEmail() {
+        return email;
     }
+
+    User decrypt() {
+        email = Strings.isBlank(email) ? email : CryptoUtil.decrypt(email);
+        return this;
+    }
+
+    User encrypt() {
+        email = Strings.isBlank(email) ? email : CryptoUtil.encrypt(email);
+        return this;
+    }
+
+    @Override
+    public int describeContents() {
+        return (int) uid;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(uid);
+        dest.writeString(seed);
+        dest.writeString(name);
+        dest.writeString(gender);
+        dest.writeString(dob);
+        dest.writeString(email);
+        dest.writeInt(age);
+    }
+
+    @Ignore
+    protected User(Parcel in) {
+        uid = in.readLong();
+        seed = in.readString();
+        name = in.readString();
+        gender = in.readString();
+        dob = in.readString();
+        email = in.readString();
+        age = in.readInt();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

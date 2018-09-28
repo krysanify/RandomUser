@@ -13,15 +13,18 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Room;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
+import static java.util.Collections.emptyList;
 
+@SuppressWarnings("unused")
 public class UserGen {
-    private static UserGen INSTANCE = new UserGen();
+    private static final UserGen INSTANCE = new UserGen();
     private Service service;
     private LocalDb local;
 
@@ -38,81 +41,113 @@ public class UserGen {
     }
 
     /**
-     * @param seed a random seed
-     * @return a specific user with given seed from local storage (if stored) or web service
-     * @throws IOException on error at {@link Call#execute()}
+     * REQ06 encrypt {@link User#email} for local storage
+     * @param user user info with plain email.
      */
-    public User getBySeed(@NonNull String seed) throws IOException {
-        Dao dao = userDao();
-        User user = dao.getBySeed(seed);
-        if (null != user) return user;
+    public void insert(@NonNull User user) {
+        userDao().insert(user.encrypt());
+        user.decrypt();// decrypt email to preserve state
+    }
 
-        ServiceBody body = service()
-                .getBySeed(seed)
-                .execute()
-                .body();
+    /**
+     * Delete given user from local storage
+     * @param user user info to delete
+     */
+    public void delete(@NonNull User user) {
+        userDao().delete(user);
+    }
 
-        ServiceBody.Info info = body.getInfo();
-        List<ServiceBody.Result> results = body.getResults();
-        for (ServiceBody.Result result : results) {
-            user = result.toUser(info.getSeed());
-            dao.insert(user);
-        }
-        return user;
+    /**
+     * Delete all users from local storage
+     */
+    public void clear() {
+        userDao().deleteAll();
+    }
+
+    /**
+     * @param seed a random seed
+     * @return a specific user with the given seed from web service
+     */
+    public User getBySeed(@NonNull String seed) {
+        Call<ServiceBody> call = service().getBySeed(seed);
+        List<User> users = processBody(call);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    /**
+     * Asynchronously return a user with the given seed
+     * @param seed a random seed
+     * @param callback an instance of {@link UserGen.Callback}
+     */
+    public void getBySeed(@Gender String seed, @NonNull Callback callback) {
+        Call<ServiceBody> call = service().getBySeed(seed);
+        call.enqueue(new QueueCall(callback));
     }
 
     /**
      * @param gender either "male" or "female"
-     * @return a user with given gender from local storage (if any) or web service
-     * @throws IOException on error at {@link Call#execute()}
+     * @return a user with the given gender from web service
      */
-    public User getByGender(@Gender String gender) throws IOException {
-        Dao dao = userDao();
-        User user = dao.getByGender(gender);
-        if (null != user) return user;
+    public User getByGender(@Gender String gender) {
+        Call<ServiceBody> call = service().getByGender(gender.toLowerCase());
+        List<User> users = processBody(call);
+        return users.isEmpty() ? null : users.get(0);
+    }
 
-        ServiceBody body = service()
-                .getByGender(gender)
-                .execute()
-                .body();
-
-        ServiceBody.Info info = body.getInfo();
-        List<ServiceBody.Result> results = body.getResults();
-        for (ServiceBody.Result result : results) {
-            user = result.toUser(info.getSeed());
-            dao.insert(user);
-        }
-        return user;
+    /**
+     * Asynchronously return a user with given gender
+     * @param gender either "male" or "female"
+     * @param callback an instance of {@link UserGen.Callback}
+     */
+    public void getByGender(@Gender String gender, @NonNull Callback callback) {
+        Call<ServiceBody> call = service().getByGender(gender.toLowerCase());
+        call.enqueue(new QueueCall(callback));
     }
 
     /**
      * @param limit amount of generated users for up to 5000
-     * @return users up to given limit from local storage (if any) or web service
-     * @throws IOException on error at {@link Call#execute()}
+     * @return users up to the given limit from web service
      */
-    public List<User> getList(@IntRange(from = 1, to = 5000) int limit) throws IOException {
-        Dao dao = userDao();
-        List<User> users = dao.getList(limit);
-        if (!users.isEmpty()) return users;
+    public List<User> getList(@IntRange(from = 1, to = 5000) int limit) {
+        Call<ServiceBody> call = service().getList(limit);
+        return processBody(call);
+    }
 
-        ServiceBody body = service()
-                .getList(limit)
-                .execute()
-                .body();
+    /**
+     * Asynchronously return users up to the given limit
+     * @param limit amount of generated users for up to 5000
+     * @param callback an instance of {@link UserGen.Callback}
+     */
+    public void getList(@IntRange(from = 1, to = 5000) int limit,
+                              @NonNull Callback callback) {
+        Call<ServiceBody> call = service().getList(limit);
+        call.enqueue(new QueueCall(callback));
+    }
+
+    private List<User> processBody(Call<ServiceBody> call) {
+        Response<ServiceBody> response;
+        try {
+            response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return emptyList();
+        }
+
+        ServiceBody body = response.body();
+        if (null == body) return emptyList();
 
         ServiceBody.Info info = body.getInfo();
         List<ServiceBody.Result> results = body.getResults();
-        users = new ArrayList<>(results.size());
+        List<User> users = new ArrayList<>(results.size());
         for (ServiceBody.Result result : results) {
             User user = result.toUser(info.getSeed());
             users.add(user);
-            dao.insert(user);
         }
         return users;
     }
 
     /**
-     * @return a private service, only exposed for testing purpose.
+     * @return web service client for randomuser.me API.
      */
     @NonNull
     UserGen.Service service() {
@@ -128,7 +163,7 @@ public class UserGen {
     }
 
     /**
-     * @return a private dao, only exposed for testing purpose.
+     * @return dao client for locally stored users.
      */
     @NonNull
     UserGen.Dao userDao() {
@@ -146,6 +181,10 @@ public class UserGen {
         context = context.getApplicationContext();
         local = Room.databaseBuilder(context, LocalDb.class, "randomUser-local")
                 .build();
+    }
+
+    public interface Callback {
+        void onGenerated(List<User> users);
     }
 
     /**
@@ -189,12 +228,12 @@ public class UserGen {
          * @param seed - random seed
          */
         @androidx.room.Query("SELECT * FROM users WHERE seed = :seed")
-        User getBySeed(@NonNull String seed);
+        User getBySeed(String seed);
 
         /**
          * Fetch a stored user with a specific gender.
          *
-         * @param gender - Gender user to return (Male or Fermale)
+         * @param gender - Gender user to return (male or female)
          */
         @androidx.room.Query("SELECT * FROM users WHERE gender = :gender LIMIT 1")
         User getByGender(@Gender String gender);
@@ -211,10 +250,44 @@ public class UserGen {
         void deleteAll();
 
         @Insert(onConflict = REPLACE)
-        void insert(@NonNull User user);
+        void insert(User user);
 
         @Delete
-        void delete(@NonNull User user);
+        void delete(User user);
     }
 
+    private class QueueCall implements retrofit2.Callback<ServiceBody> {
+        private Callback callback;
+
+        QueueCall(Callback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void onResponse(@NonNull Call<ServiceBody> call,
+                               @NonNull Response<ServiceBody> response) {
+            ServiceBody body = response.body();
+            List<User> users = emptyList();
+
+            if (null != body) {
+                ServiceBody.Info info = body.getInfo();
+                List<ServiceBody.Result> results = body.getResults();
+
+                users = new ArrayList<>(results.size());
+                for (ServiceBody.Result result : results) {
+                    User user = result.toUser(info.getSeed());
+                    users.add(user);
+                }
+            }
+
+            callback.onGenerated(users);
+            callback = null;
+        }
+
+        @Override
+        public void onFailure(@NonNull Call<ServiceBody> call, @NonNull Throwable t) {
+            t.printStackTrace();
+            callback = null;
+        }
+    }
 }

@@ -38,7 +38,7 @@ public class UserGenDaoTest {
         User lorem = dao.getBySeed("lorem");
         if (null == lorem) {
             lorem = new User(1, "lorem", "lorem ipsum", "female", "1976-12-03T00:00:00Z", "", -1);
-            dao.insert(lorem);
+            dao.insert(lorem.encrypt());
             lorem = dao.getBySeed("lorem");
         }
 
@@ -46,7 +46,7 @@ public class UserGenDaoTest {
         assertEquals("lorem ipsum", lorem.name);
         assertEquals("female", lorem.gender);
         assertEquals("1976-12-03T00:00:00Z", lorem.dob);
-        assertEquals("", lorem.email);
+        assertEquals("", lorem.decrypt().getEmail());
 
         dao.delete(lorem);
         lorem = dao.getBySeed("lorem");
@@ -63,7 +63,7 @@ public class UserGenDaoTest {
         User lorem = dao.getByGender("male");
         if (null == lorem) {
             lorem = new User(1, "lorem", "lorem ipsum", "male", "1976-12-03T00:00:00Z", "", -1);
-            dao.insert(lorem);
+            dao.insert(lorem.encrypt());
             lorem = dao.getByGender("male");
         }
 
@@ -71,7 +71,7 @@ public class UserGenDaoTest {
         assertEquals("lorem ipsum", lorem.name);
         assertEquals("male", lorem.gender);
         assertEquals("1976-12-03T00:00:00Z", lorem.dob);
-        assertEquals("", lorem.email);
+        assertEquals("", lorem.decrypt().getEmail());
 
         dao.delete(lorem);
         lorem = dao.getByGender("male");
@@ -96,7 +96,7 @@ public class UserGenDaoTest {
                     new User(5, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
             };
             for (User user : users) {
-                dao.insert(user);
+                dao.insert(user.encrypt());
             }
             lorem = dao.getList(5);
         }

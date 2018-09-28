@@ -2,6 +2,7 @@ package com.krysanify.lib;
 
 import android.content.Context;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,11 @@ public class UserGenServiceTest {
         dao = UserGen.init(appContext).userDao();
     }
 
+    @After
+    public void tearDown() {
+        dao.deleteAll();
+    }
+
     /**
      * Given an email address,
      * when it's encrypted,
@@ -51,25 +57,12 @@ public class UserGenServiceTest {
     @Test
     public void service_bySeed() {
         Call<ServiceBody> call = UserGen.get().service().getBySeed("qwerty");
-        Response<ServiceBody> response = null;
-        try {
-            response = call.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        assertNotNull(response);
-        ServiceBody.Info info = response.body().getInfo();
-        List<ServiceBody.Result> results = response.body().getResults();
-
-        for (ServiceBody.Result result : results) {
-            dao.insert(result.toUser(info.getSeed()));
-        }
-
-        User user = dao.getBySeed("qwerty");
+        User user = processBody(call);
+        User qwerty = dao.getBySeed("qwerty");
         assertNotNull(user);
-        assertEquals(info.getSeed(), user.seed);
-        dao.delete(user);
+        assertNotNull(qwerty);
+        assertEquals(user.seed, qwerty.seed);
+        dao.delete(qwerty);
     }
 
     /**
@@ -80,6 +73,16 @@ public class UserGenServiceTest {
     @Test
     public void service_byGender() {
         Call<ServiceBody> call = UserGen.get().service().getByGender("female");
+        User user = processBody(call);
+
+        User female = dao.getByGender("female");
+        assertNotNull(user);
+        assertNotNull(female);
+        assertEquals(user.name, female.name);
+        dao.delete(female);
+    }
+
+    private User processBody(Call<ServiceBody> call) {
         Response<ServiceBody> response = null;
         try {
             response = call.execute();
@@ -88,20 +91,16 @@ public class UserGenServiceTest {
         }
 
         assertNotNull(response);
+        assertNotNull(response.body());
         ServiceBody.Info info = response.body().getInfo();
         List<ServiceBody.Result> results = response.body().getResults();
 
         User user = null;
         for (ServiceBody.Result result : results) {
             user = result.toUser(info.getSeed());
-            dao.insert(user);
+            dao.insert(user.encrypt());
         }
-
-        User female = dao.getByGender("female");
-        assertNotNull(user);
-        assertNotNull(female);
-        assertEquals(user.name, female.name);
-        dao.delete(female);
+        return user;
     }
 
     /**
@@ -121,6 +120,7 @@ public class UserGenServiceTest {
         }
 
         assertNotNull(response);
+        assertNotNull(response.body());
         ServiceBody.Info info = response.body().getInfo();
         List<ServiceBody.Result> results = response.body().getResults();
         assertEquals(limit, results.size());
@@ -128,8 +128,10 @@ public class UserGenServiceTest {
         List<User> list = dao.getList(limit);
         assertEquals(0, list.size());
 
+        User user;
         for (ServiceBody.Result result : results) {
-            dao.insert(result.toUser(info.getSeed()));
+            user = result.toUser(info.getSeed());
+            dao.insert(user.encrypt());
         }
 
         list = dao.getList(limit);
