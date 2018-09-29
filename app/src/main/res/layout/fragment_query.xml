@@ -35,7 +35,8 @@
         android:hint="@string/edit_seed"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="@id/pick_gender"
-        app:layout_constraintTop_toBottomOf="@id/pick_gender" />
+        app:layout_constraintTop_toBottomOf="@id/pick_gender"
+        tools:ignore="Autofill" />
 
     <EditText
         android:id="@+id/edit_limit"
@@ -44,7 +45,8 @@
         android:hint="@string/edit_limit"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="@id/edit_seed"
-        app:layout_constraintTop_toBottomOf="@id/edit_seed" />
+        app:layout_constraintTop_toBottomOf="@id/edit_seed"
+        tools:ignore="Autofill" />
 
     <TextView
         android:id="@+id/text_gender"
@@ -67,7 +69,6 @@
         app:layout_constraintTop_toTopOf="@+id/edit_seed" />
 
     <TextView
-        android:id="@+id/text_limit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

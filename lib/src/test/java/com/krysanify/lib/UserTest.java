@@ -6,9 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * REQ03: Test cases for {@link User} implementation
  */
 public class UserTest {
     /**
@@ -37,6 +35,9 @@ public class UserTest {
         assertEquals(24, user.getAge());
     }
 
+    /**
+     * Given a new user, when given age is -1, then assert user's age are 47.
+     */
     @Ignore("until age can be calculated from dob")
     @Test
     public void age_byDob() {

@@ -39,6 +39,7 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
     implementation "android.arch.navigation:navigation-ui:$nav_version"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
     androidTestImplementation "android.arch.navigation:navigation-testing:$nav_version"
 
     testImplementation 'junit:junit:4.12'

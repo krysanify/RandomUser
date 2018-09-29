@@ -3,10 +3,11 @@ package com.krysanify.app;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -14,9 +15,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.Navigation;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    // todo: better put it on Application
+    private static ExecutorService EXECUTOR;
+
+    static ExecutorService executor() {
+        if (null == EXECUTOR)
+            EXECUTOR = Executors.newFixedThreadPool(2);
+        return EXECUTOR;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +84,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_query) {
-
+            Navigation.findNavController(this, R.id.nav_host_fragment)
+                    .navigate(R.id.query_fragment);
         } else if (id == R.id.nav_browse) {
-
+            Navigation.findNavController(this, R.id.nav_host_fragment)
+                    .navigate(R.id.user_list_fragment, UserListFragment.args(0));
         } else if (id == R.id.nav_exit) {
             finish();
         }

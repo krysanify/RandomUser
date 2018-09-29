@@ -8,6 +8,9 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+/**
+ * User class
+ */
 @Entity(tableName = "users")
 public class User implements Parcelable {
     @PrimaryKey
@@ -20,7 +23,6 @@ public class User implements Parcelable {
     private int age;
 
     /**
-     * User info
      * @param uid hashcode value of seed, name, gender, dob, and email
      * @param seed taken from {@link ServiceBody.Info#seed}
      * @param name taken from {@link ServiceBody.Name#asWhole}
@@ -41,9 +43,6 @@ public class User implements Parcelable {
     }
 
     public int getAge() {
-        if (0 > age) {
-            age = 42;//fixme: must calculate from dob when -1
-        }
         return age;
     }
 
@@ -51,11 +50,17 @@ public class User implements Parcelable {
         return email;
     }
 
+    /**
+     * @return this {@link User} with a decrypted email
+     */
     User decrypt() {
         email = Strings.isBlank(email) ? email : CryptoUtil.decrypt(email);
         return this;
     }
 
+    /**
+     * @return this {@link User} with an encrypted email
+     */
     User encrypt() {
         email = Strings.isBlank(email) ? email : CryptoUtil.encrypt(email);
         return this;

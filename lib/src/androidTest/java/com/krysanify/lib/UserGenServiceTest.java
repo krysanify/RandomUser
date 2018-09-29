@@ -125,7 +125,7 @@ public class UserGenServiceTest {
         List<ServiceBody.Result> results = response.body().getResults();
         assertEquals(limit, results.size());
 
-        List<User> list = dao.getList(limit);
+        List<User> list = dao.getList(0, limit);
         assertEquals(0, list.size());
 
         User user;
@@ -134,7 +134,7 @@ public class UserGenServiceTest {
             dao.insert(user.encrypt());
         }
 
-        list = dao.getList(limit);
+        list = dao.getList(0, limit);
         assertNotNull(list);
         assertEquals(limit, list.size());
         dao.deleteAll();

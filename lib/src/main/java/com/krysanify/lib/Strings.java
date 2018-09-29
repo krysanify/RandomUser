@@ -4,8 +4,15 @@ import static java.lang.Character.isDigit;
 import static java.lang.Character.isSpaceChar;
 import static java.lang.Character.isWhitespace;
 
-@SuppressWarnings("unused")
+/**
+ * Utility class for String operations
+ */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Strings {
+    /**
+     * @param str a {@link String} to check
+     * @return true if given String consists of whitespaces only, otherwise false
+     */
     public static boolean isBlank(String str) {
         final int len = str.length();
         if (0 == len) return true;
@@ -16,6 +23,10 @@ public class Strings {
         return true;
     }
 
+    /**
+     * @param str a {@link String} to check
+     * @return true if given String consists of digits only, otherwise false
+     */
     public static boolean isNumber(String str) {
         final int len = str.length();
         if (0 == len) return false;

@@ -16,6 +16,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * REQ03: Test cases for {@link UserGen} implementation
+ */
 @RunWith(AndroidJUnit4.class)
 public class UserGenTest {
     private UserGen userGen;
@@ -55,7 +58,7 @@ public class UserGenTest {
 
     /**
      * Given a random user with gender "unknown" either from local storage or web service,
-     * when retrieved, then assert its gender is NOT "unknown"
+     * when retrieved, then assert its gender is "male" or "female"
      */
     @Test
     public void usergen_notUnknown() {

@@ -15,4 +15,10 @@
         android:name="com.krysanify.app.UserInfoFragment"
         android:label="@string/nav_query"
         tools:layout="@layout/fragment_user_info" />
+
+    <fragment
+        android:id="@+id/user_list_fragment"
+        android:name="com.krysanify.app.UserListFragment"
+        android:label="@string/nav_query"
+        tools:layout="@layout/fragment_user_list" />
 </navigation>

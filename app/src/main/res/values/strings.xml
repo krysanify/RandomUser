@@ -24,4 +24,7 @@
     <string name="text_email">Email</string>
     <string name="text_uid">User ID</string>
     <string name="btn_store">Store</string>
+    <string name="snack_user_stored">User info stored</string>
+    <string name="btn_delete">Delete</string>
+    <string name="snack_user_deleted">User deleted</string>
 </resources>

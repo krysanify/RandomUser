@@ -85,7 +85,7 @@ public class UserGenDaoTest {
      */
     @Test
     public void dao_getList() {
-        List<User> lorem = dao.getList(5);
+        List<User> lorem = dao.getList(0, 5);
         if (lorem.isEmpty()) {
             // only primary keys are unique
             User[] users = {
@@ -94,17 +94,25 @@ public class UserGenDaoTest {
                     new User(3, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
                     new User(4, "a", "b", "male", "1970-01-01T00:00:00Z", "c@d.ef", 48),
                     new User(5, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
+                    new User(6, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
+                    new User(7, "a", "b", "male", "1970-01-01T00:00:00Z", "c@d.ef", 48),
+                    new User(8, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
+                    new User(9, "a", "b", "male", "1970-01-01T00:00:00Z", "c@d.ef", 48),
+                    new User(10, "a", "b", "female", "1970-01-01T00:00:00Z", "c@d.ef", 48),
             };
             for (User user : users) {
                 dao.insert(user.encrypt());
             }
-            lorem = dao.getList(5);
         }
 
+        lorem = dao.getList(0, 5);
         assertEquals(5, lorem.size());
 
+        lorem = dao.getList(7, 7);
+        assertEquals(3, lorem.size());
+
         dao.deleteAll();
-        lorem = dao.getList(5);
+        lorem = dao.getList(0, 5);
         assertEquals(0, lorem.size());
     }
 }

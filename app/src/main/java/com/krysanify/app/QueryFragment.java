@@ -31,6 +31,7 @@ public class QueryFragment extends Fragment implements View.OnClickListener, Use
         return view;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onClick(View v) {
         EditText editSeed = getView().findViewById(R.id.edit_seed);
@@ -45,7 +46,10 @@ public class QueryFragment extends Fragment implements View.OnClickListener, Use
 
         String limit = editLimit.getText().toString();
         if (Strings.isNumber(limit)) {
-            UserGen.get().getList(Integer.parseInt(limit), this);
+            Bundle args = UserListFragment.args(Integer.parseInt(limit));
+            //noinspection ConstantConditions
+            Navigation.findNavController(getActivity(), R.id.nav_host_fragment)
+                    .navigate(R.id.user_list_fragment, args);
             return;
         }
 
@@ -58,10 +62,9 @@ public class QueryFragment extends Fragment implements View.OnClickListener, Use
         FragmentActivity parent = getActivity();
         if (null == parent) return;
         if (list.isEmpty()) throw new IllegalArgumentException("Empty list!");
-        else if (1 == list.size()) {
-            Bundle args = UserInfoFragment.args(list.get(0));
-            Navigation.findNavController(parent, R.id.nav_fragment)
-                .navigate(R.id.user_info_fragment, args);
-        }
+
+        Bundle args = UserInfoFragment.args(list.get(0), false);
+        Navigation.findNavController(parent, R.id.nav_host_fragment)
+            .navigate(R.id.user_info_fragment, args);
     }
 }

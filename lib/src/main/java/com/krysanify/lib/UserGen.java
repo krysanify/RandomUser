@@ -3,6 +3,7 @@ package com.krysanify.lib;
 import android.content.Context;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,9 @@ import retrofit2.http.Query;
 import static androidx.room.OnConflictStrategy.REPLACE;
 import static java.util.Collections.emptyList;
 
+/**
+ * REQ01: Core functionality
+ */
 @SuppressWarnings("unused")
 public class UserGen {
     private static final UserGen INSTANCE = new UserGen();
@@ -124,6 +128,20 @@ public class UserGen {
         call.enqueue(new QueueCall(callback));
     }
 
+    /**
+     * @param page zero-based multiplier to skip users
+     * @param count maximum amount of users
+     * @return users up to {@code count} on the given {@code page}
+     */
+    public List<User> getLocal(int page, int count) {
+        int skip = 0 == page ? 0 : page * count;
+        List<User> list = userDao().getList(skip, count);
+        for (User user : list) {
+            user.decrypt();
+        }
+        return list;
+    }
+
     private List<User> processBody(Call<ServiceBody> call) {
         Response<ServiceBody> response;
         try {
@@ -183,18 +201,24 @@ public class UserGen {
                 .build();
     }
 
+    /**
+     * Callback interface to received users from web service
+     */
     public interface Callback {
+        /**
+         * @param users generated users, or empty
+         */
         void onGenerated(List<User> users);
     }
 
     /**
-     * Get user info from <a href="https://randomuser.me/documentation">randomuser.me</a>.
+     * REQ04: Get user info from <a href="https://randomuser.me/documentation">randomuser.me</a>.
      */
     public interface Service {
         /**
          * Returns a specific user with a random seed.
          *
-         * @param seed - random seed
+         * @param seed random seed
          */
         @GET("?inc=name,gender,age,dob,email")
         Call<ServiceBody> getBySeed(@Query("seed") String seed);
@@ -202,7 +226,7 @@ public class UserGen {
         /**
          * Returns a random user with a specific gender.
          *
-         * @param gender - Gender user to return (Male or Female)
+         * @param gender Gender user to return (Male or Female)
          */
         @GET("?inc=name,gender,age,dob,email")
         Call<ServiceBody> getByGender(@Gender @Query("gender") String gender);
@@ -210,7 +234,7 @@ public class UserGen {
         /**
          * Returns a list of random users up to 5000
          *
-         * @param limit - Number of users
+         * @param limit Number of users
          */
         @GET("?inc=name,gender,age,dob,email")
         Call<ServiceBody> getList(@IntRange(from = 1, to = 5000) @Query("results") int limit);
@@ -225,7 +249,7 @@ public class UserGen {
         /**
          * Fetch a specific user with a random seed.
          *
-         * @param seed - random seed
+         * @param seed random seed
          */
         @androidx.room.Query("SELECT * FROM users WHERE seed = :seed")
         User getBySeed(String seed);
@@ -233,7 +257,7 @@ public class UserGen {
         /**
          * Fetch a stored user with a specific gender.
          *
-         * @param gender - Gender user to return (male or female)
+         * @param gender Gender user to return (male or female)
          */
         @androidx.room.Query("SELECT * FROM users WHERE gender = :gender LIMIT 1")
         User getByGender(@Gender String gender);
@@ -241,10 +265,10 @@ public class UserGen {
         /**
          * Fetch a list of stored users up to 5000
          *
-         * @param limit - Number of users
+         * @param count Number of users
          */
-        @androidx.room.Query("SELECT * FROM users LIMIT :limit")
-        List<User> getList(@IntRange(from = 1, to = 5000) int limit);
+        @androidx.room.Query("SELECT * FROM users LIMIT :skip, :count")
+        List<User> getList(int skip, @IntRange(from = 1, to = 5000) int count);
 
         @androidx.room.Query("DELETE FROM users")
         void deleteAll();
@@ -257,15 +281,19 @@ public class UserGen {
     }
 
     private class QueueCall implements retrofit2.Callback<ServiceBody> {
-        private Callback callback;
+        private WeakReference<Callback> callbackRef;
 
         QueueCall(Callback callback) {
-            this.callback = callback;
+            callbackRef = new WeakReference<>(callback);
         }
 
         @Override
         public void onResponse(@NonNull Call<ServiceBody> call,
                                @NonNull Response<ServiceBody> response) {
+            Callback callback = callbackRef.get();
+            callbackRef.clear();
+
+            if (null == callback) return;
             ServiceBody body = response.body();
             List<User> users = emptyList();
 
@@ -281,13 +309,13 @@ public class UserGen {
             }
 
             callback.onGenerated(users);
-            callback = null;
+            callbackRef = null;
         }
 
         @Override
         public void onFailure(@NonNull Call<ServiceBody> call, @NonNull Throwable t) {
             t.printStackTrace();
-            callback = null;
+            callbackRef = null;
         }
     }
 }
